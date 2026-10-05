@@ -1,0 +1,91 @@
+<script type="text/javascript">
+  RED.nodes.registerType('lerobot-record', {
+    category: 'RRCF',
+    color: '#e91e63',
+    defaults: {
+      name: { value: '' },
+      server: { value: '', type: 'lerobot-config', required: true },
+      action: { value: 'start' },
+      datasetRepoId: { value: '' },
+      singleTask: { value: '' },
+      leaderPort: { value: '' },
+      followerPort: { value: '' },
+      leaderConfig: { value: '' },
+      followerConfig: { value: '' },
+      numEpisodes: { value: 5 },
+      episodeTimeS: { value: 30 },
+      resetTimeS: { value: 10 },
+      fps: { value: 30 },
+      video: { value: true },
+      pushToHub: { value: false },
+      testMode: { value: false }
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: 'font-awesome/fa-video-camera',
+    label: function () { return this.name || ('lerobot record: ' + (this.action || 'start')); },
+    paletteLabel: 'lerobot record'
+  });
+</script>
+
+<script type="text/html" data-template-name="lerobot-record">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name">
+  </div>
+  <div class="form-row">
+    <label for="node-input-server"><i class="fa fa-server"></i> Backend</label>
+    <input type="text" id="node-input-server">
+  </div>
+  <div class="form-row">
+    <label for="node-input-action"><i class="fa fa-play"></i> Action</label>
+    <select id="node-input-action">
+      <option value="start">start</option>
+      <option value="stop">stop</option>
+      <option value="status">status</option>
+      <option value="exit-early">exit early (next episode)</option>
+      <option value="re-record">re-record episode</option>
+    </select>
+  </div>
+  <hr>
+  <div class="form-tips">Fields below apply to <b>start</b>. <code>msg.payload</code> overrides them per run.</div>
+  <div class="form-row">
+    <label for="node-input-datasetRepoId">Dataset</label>
+    <input type="text" id="node-input-datasetRepoId" placeholder="user/my-dataset">
+  </div>
+  <div class="form-row">
+    <label for="node-input-singleTask">Task</label>
+    <input type="text" id="node-input-singleTask" placeholder="Grab the cube">
+  </div>
+  <div class="form-row">
+    <label for="node-input-numEpisodes">Episodes</label>
+    <input type="number" id="node-input-numEpisodes" style="width:70px">
+    <label for="node-input-episodeTimeS" style="margin-left:10px">Ep secs</label>
+    <input type="number" id="node-input-episodeTimeS" style="width:70px">
+    <label for="node-input-fps" style="margin-left:10px">FPS</label>
+    <input type="number" id="node-input-fps" style="width:55px">
+  </div>
+  <div class="form-row">
+    <label for="node-input-leaderPort">Leader port</label>
+    <input type="text" id="node-input-leaderPort" placeholder="/dev/ttyACM0">
+  </div>
+  <div class="form-row">
+    <label for="node-input-followerPort">Follower port</label>
+    <input type="text" id="node-input-followerPort" placeholder="/dev/ttyACM1">
+  </div>
+  <div class="form-row">
+    <label style="width:auto"><input type="checkbox" id="node-input-video" style="width:auto"> Video</label>
+    <label style="width:auto; margin-left:12px"><input type="checkbox" id="node-input-pushToHub" style="width:auto"> Push to Hub</label>
+    <label style="width:auto; margin-left:12px"><input type="checkbox" id="node-input-testMode" style="width:auto"> Test mode</label>
+  </div>
+  <div class="form-tips"><b>Test mode</b> skips the physical robot connection — use it to exercise the flow with no SO-101 arm attached.</div>
+</script>
+
+<script type="text/html" data-help-name="lerobot-record">
+  <p>Controls a LeRobotDataset recording session via leLab.</p>
+  <p>For <b>start</b>, the request is built from the fields here and shallow-merged
+     with <code>msg.payload</code>, so a flow can set <code>dataset_repo_id</code>
+     and <code>single_task</code> per run. <code>msg.action</code> overrides the
+     configured action (start / stop / status / exit-early / re-record).</p>
+  <p>Requires a <b>lerobot-config</b> backend. Output carries leLab's JSON response.</p>
+</script>

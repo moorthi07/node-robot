@@ -1,0 +1,62 @@
+<script type="text/javascript">
+  RED.nodes.registerType('lerobot-bridge', {
+    category: 'RRCF',
+    color: '#00bcd4',
+    defaults: {
+      name: { value: '' },
+      task: { value: 'teleop episode' },
+      stateKeys: { value: '' },
+      maxFrames: { value: 100000 }
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: 'font-awesome/fa-random',
+    label: function () { return this.name || 'lerobot bridge'; },
+    paletteLabel: 'lerobot bridge'
+  });
+</script>
+
+<script type="text/html" data-template-name="lerobot-bridge">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name">
+  </div>
+  <div class="form-row">
+    <label for="node-input-task"><i class="fa fa-tasks"></i> Task</label>
+    <input type="text" id="node-input-task" placeholder="teleop episode">
+  </div>
+  <div class="form-row">
+    <label for="node-input-stateKeys">State keys</label>
+    <input type="text" id="node-input-stateKeys" placeholder="battery,speed,heading (blank = all numeric)">
+  </div>
+  <div class="form-row">
+    <label for="node-input-maxFrames">Max frames</label>
+    <input type="number" id="node-input-maxFrames" style="width:110px">
+  </div>
+  <div class="form-tips">
+    Drive with <code>msg.command</code>: <b>start</b> begins an episode,
+    <b>frame</b> buffers the RRCF sample in <code>msg.payload</code>, <b>stop</b>
+    emits the structured episode.
+  </div>
+</script>
+
+<script type="text/html" data-help-name="lerobot-bridge">
+  <p>Records this robot's live RRCF stream into a LeRobot-shaped episode —
+     turning the RRCA's (state, action) flow into imitation-learning data for
+     <i>any</i> morphology, which leLab's arm-only recording cannot do.</p>
+  <h3>Commands (<code>msg.command</code>)</h3>
+  <ul>
+    <li><b>start</b> — begin an episode (<code>msg.task</code> optional).</li>
+    <li><b>frame</b> — buffer the RRCF telemetry/command in <code>msg.payload</code>.</li>
+    <li><b>stop</b> / <b>flush</b> — emit the structured episode on the output.</li>
+  </ul>
+  <h3>Important</h3>
+  <p>This node buffers and shapes frames; it does <b>not</b> write the
+     <code>.parquet</code>/<code>.mp4</code> itself. The LeRobot v3 format —
+     including <code>LeRobotDataset.finalize()</code> — can only be produced
+     correctly by the lerobot Python library. Wire the output to a LeRobot writer
+     (see the collection README); until then this is a correct, inspectable
+     capture buffer, not a written dataset.</p>
+  <p>Camera frames are referenced, not inlined: video travels over Janus/MinIO
+     and the writer muxes the MP4. Only numeric state and action are buffered here.</p>
+</script>

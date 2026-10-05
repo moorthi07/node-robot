@@ -1,0 +1,14 @@
+node-robot
+Copyright 2026 Indo-Mars Technologies
+
+This product is built on Node-RED (https://nodered.org), which is licensed under
+the Apache License, Version 2.0. Node-RED is a trademark of the OpenJS Foundation.
+node-robot is an independent distribution that embeds Node-RED as a dependency;
+it is not endorsed by or affiliated with the OpenJS Foundation.
+
+The bundled Node-RED source and its own LICENSE / NOTICE files are retained under
+node_modules/node-red/ after installation.
+
+Portions of this product implement the Robot Remote Control Format (RRCF),
+published under the Apache License, Version 2.0 at
+https://rrcf-foundation.github.io/spec/

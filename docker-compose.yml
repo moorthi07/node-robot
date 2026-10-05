@@ -1,0 +1,50 @@
+# node-robot — RRCA runtime. Standalone; runs wherever the robot's compute is.
+
+name: node-robot
+
+services:
+  node-robot:
+    build: .
+    container_name: node-robot
+    env_file:
+      - .env
+    ports:
+      - "1880:1880"
+    volumes:
+      - ./data:/app/data
+      # Edit the declaration and restart to run the RRCA for a different robot,
+      # no rebuild.
+      - ./rrcf:/app/rrcf:ro
+      # Adapters are the integration point; mount them so a real adapter can be
+      # dropped in without rebuilding the image.
+      - ./adapters:/app/adapters:ro
+    environment:
+      # Where the lerobot-* nodes and the embedded UI look for leLab. Defaults to
+      # the lelab sidecar below when that profile is up; override for a GPU box.
+      - LEROBOT_URL=${LEROBOT_URL:-http://lelab:8000}
+    restart: unless-stopped
+
+  # LeRobot backend (leLab). OPT-IN via the `lerobot` profile — it is a heavy
+  # Python+PyTorch image and only needed for the @rrcf/node-robot-lerobot nodes:
+  #   docker compose --profile lerobot up -d
+  #
+  # No official leLab image is published, so this builds from the upstream repo.
+  # On a Raspberry Pi expect this to be large and slow; training is not realistic
+  # there (record/teleop are) — point LEROBOT_URL at a GPU box for training.
+  #
+  # Device passthrough (for a real SO-101 arm on USB) is commented out; uncomment
+  # and set the correct /dev path for your host.
+  lelab:
+    image: python:3.11-slim
+    container_name: node-robot-lelab
+    profiles: ["lerobot"]
+    command:
+      - bash
+      - -lc
+      - "apt-get update && apt-get install -y git && pip install -e git+https://github.com/huggingface/leLab.git#egg=lelab && lelab"
+    ports:
+      - "8000:8000"
+    # devices:
+    #   - "/dev/ttyACM0:/dev/ttyACM0"   # SO-101 leader
+    #   - "/dev/ttyACM1:/dev/ttyACM1"   # SO-101 follower
+    restart: unless-stopped

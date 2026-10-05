@@ -1,0 +1,36 @@
+<script type="text/javascript">
+  RED.nodes.registerType('rrcf-ops', {
+    category: 'RRCF',
+    color: '#ff9800',
+    defaults: { name: { value: '' } },
+    inputs: 1,
+    outputs: 1,
+    icon: 'font-awesome/fa-shield',
+    label: function () { return this.name || 'rrcf ops'; },
+    paletteLabel: 'rrcf ops'
+  });
+</script>
+
+<script type="text/html" data-template-name="rrcf-ops">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="rrcf ops">
+  </div>
+</script>
+
+<script type="text/html" data-help-name="rrcf-ops">
+  <p>Safety operations and telemetry stamping. Behaviour is selected by
+     <code>msg.topic</code>:</p>
+  <ul>
+    <li><code>estop</code> — engage the latching e-stop.</li>
+    <li><code>release</code> — clear a latched e-stop (explicit operator action;
+        robot stays halted until the next valid command).</li>
+    <li><code>telemetry</code> — stamp the sample with the mandatory
+        <code>estop_state</code> / <code>health</code> state fields from the
+        safety envelope and mark it as RRCF telemetry.</li>
+    <li><i>(no topic)</i> — emit the current safety snapshot.</li>
+  </ul>
+  <p>This node <b>drives</b> the safety envelope; it does not <b>contain</b> it.
+     The watchdog and e-stop enforcement live in the runtime and keep working
+     even if this node is removed.</p>
+</script>

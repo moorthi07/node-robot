@@ -1,0 +1,55 @@
+<script type="text/javascript">
+  RED.nodes.registerType('lerobot-policy', {
+    category: 'RRCF',
+    color: '#673ab7',
+    defaults: {
+      name: { value: '' },
+      server: { value: '', type: 'lerobot-config', required: true },
+      action: { value: 'infer-status' }
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: 'font-awesome/fa-brain',
+    label: function () { return this.name || ('lerobot policy: ' + (this.action || 'infer-status')); },
+    paletteLabel: 'lerobot policy'
+  });
+</script>
+
+<script type="text/html" data-template-name="lerobot-policy">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name">
+  </div>
+  <div class="form-row">
+    <label for="node-input-server"><i class="fa fa-server"></i> Backend</label>
+    <input type="text" id="node-input-server">
+  </div>
+  <div class="form-row">
+    <label for="node-input-action"><i class="fa fa-cog"></i> Action</label>
+    <select id="node-input-action">
+      <option value="infer-start">inference: start</option>
+      <option value="infer-stop">inference: stop</option>
+      <option value="infer-status">inference: status</option>
+      <option value="train">train</option>
+      <option value="jobs">jobs: list</option>
+      <option value="job">job: get</option>
+      <option value="job-stop">job: stop</option>
+    </select>
+  </div>
+  <div class="form-tips">
+    Request body comes from <code>msg.payload</code> (policy path, dataset,
+    hyperparameters — these are job-specific and not frozen into node fields).
+    <code>job</code> / <code>job-stop</code> need <code>msg.jobId</code>.
+    <br><br>
+    Pick the <b>Backend</b> to decide WHERE it runs: a GPU-box config for
+    <b>train</b>, the local sidecar for <b>inference</b>.
+  </div>
+</script>
+
+<script type="text/html" data-help-name="lerobot-policy">
+  <p>Runs inference and training via leLab.</p>
+  <p><b>train</b> returns immediately with a job handle (leLab runs it in the
+     background); poll with <b>job</b> using <code>msg.jobId</code>. The target
+     backend — local sidecar vs. a GPU box — is chosen by the selected
+     <b>lerobot-config</b>, which is how "where does the policy run" is answered.</p>
+</script>

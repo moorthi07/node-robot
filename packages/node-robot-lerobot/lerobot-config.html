@@ -1,0 +1,32 @@
+<script type="text/javascript">
+  RED.nodes.registerType('lerobot-config', {
+    category: 'config',
+    defaults: {
+      name: { value: '' },
+      baseUrl: { value: 'http://localhost:8000', required: true }
+    },
+    label: function () { return this.name || this.baseUrl || 'lerobot backend'; }
+  });
+</script>
+
+<script type="text/html" data-template-name="lerobot-config">
+  <div class="form-row">
+    <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-config-input-name" placeholder="local sidecar / gpu box">
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-baseUrl"><i class="fa fa-server"></i> leLab URL</label>
+    <input type="text" id="node-config-input-baseUrl" placeholder="http://localhost:8000">
+  </div>
+  <div class="form-tips">
+    Where LeRobot (the leLab service) runs. Point recording/teleop nodes at a
+    local sidecar and training/inference nodes at a GPU box by giving each the
+    appropriate config.
+  </div>
+</script>
+
+<script type="text/html" data-help-name="lerobot-config">
+  <p>Connection settings for a LeRobot backend — HuggingFace's
+     <a href="https://github.com/huggingface/leLab">leLab</a> FastAPI service.
+     Shared by all <b>lerobot-*</b> nodes so the backend location lives in one place.</p>
+</script>

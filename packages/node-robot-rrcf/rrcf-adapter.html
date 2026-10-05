@@ -1,0 +1,49 @@
+<script type="text/javascript">
+  RED.nodes.registerType('rrcf-adapter', {
+    category: 'RRCF',
+    color: '#2196f3',
+    defaults: {
+      name: { value: '' },
+      adapter: { value: 'log', required: true }
+    },
+    inputs: 1,
+    outputs: 2,
+    outputLabels: ['sent', 'blocked / refused'],
+    icon: 'font-awesome/fa-plug',
+    label: function () { return this.name || ('rrcf → ' + (this.adapter || 'adapter')); },
+    paletteLabel: 'rrcf adapter'
+  });
+</script>
+
+<script type="text/html" data-template-name="rrcf-adapter">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="rrcf adapter">
+  </div>
+  <div class="form-row">
+    <label for="node-input-adapter"><i class="fa fa-plug"></i> Adapter</label>
+    <input type="text" id="node-input-adapter" placeholder="log">
+  </div>
+  <div class="form-tips">
+    The adapter name resolves to <code>adapters/&lt;name&gt;.js</code> in the
+    runtime, which must export <code>async send(command, api)</code>. Ships with
+    a <code>log</code> adapter that prints commands — replace it with one that
+    speaks your robot's SDK/ROS/serial.
+  </div>
+</script>
+
+<script type="text/html" data-help-name="rrcf-adapter">
+  <p>Passes a validated command through the runtime's <b>safety envelope</b> and,
+     only if allowed, dispatches it to the configured Adapter.</p>
+  <h3>Safety</h3>
+  <p>Dispatch happens exclusively through <code>envelope.gate()</code> inside this
+     node. A command is refused (output 2, adapter NOT called) when e-stop is
+     engaged or the watchdog has halted the robot. Allowed commands are clamped to
+     the declared speed limits before the adapter sees them. This cannot be
+     bypassed by rewiring the flow.</p>
+  <h3>Outputs</h3>
+  <ol class="node-ports">
+    <li>The command as sent (envelope-clamped) plus any adapter result.</li>
+    <li>Refusals: <code>{ blocked: true, reason }</code>.</li>
+  </ol>
+</script>

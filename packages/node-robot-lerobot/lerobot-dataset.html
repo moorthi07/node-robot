@@ -1,0 +1,55 @@
+<script type="text/javascript">
+  RED.nodes.registerType('lerobot-dataset', {
+    category: 'RRCF',
+    color: '#9c27b0',
+    defaults: {
+      name: { value: '' },
+      server: { value: '', type: 'lerobot-config', required: true },
+      action: { value: 'list' },
+      datasetRepoId: { value: '' }
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: 'font-awesome/fa-database',
+    label: function () { return this.name || ('lerobot dataset: ' + (this.action || 'list')); },
+    paletteLabel: 'lerobot dataset'
+  });
+</script>
+
+<script type="text/html" data-template-name="lerobot-dataset">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name">
+  </div>
+  <div class="form-row">
+    <label for="node-input-server"><i class="fa fa-server"></i> Backend</label>
+    <input type="text" id="node-input-server">
+  </div>
+  <div class="form-row">
+    <label for="node-input-action"><i class="fa fa-cog"></i> Action</label>
+    <select id="node-input-action">
+      <option value="list">list</option>
+      <option value="info">info</option>
+      <option value="episodes">episodes</option>
+      <option value="episode">episode</option>
+      <option value="upload">upload</option>
+      <option value="delete">delete</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label for="node-input-datasetRepoId">Dataset</label>
+    <input type="text" id="node-input-datasetRepoId" placeholder="user/my-dataset">
+  </div>
+  <div class="form-tips">
+    <code>msg.payload.dataset_repo_id</code> (or a bare string payload) overrides
+    the field. <b>delete</b> ignores the field and requires the id in the message.
+  </div>
+</script>
+
+<script type="text/html" data-help-name="lerobot-dataset">
+  <p>Browse and manage LeRobotDatasets via leLab: <b>list</b> (local + Hub),
+     <b>info</b>, <b>episodes</b>, a single <b>episode</b>, <b>upload</b> to the
+     Hub, and <b>delete</b>.</p>
+  <p><b>delete</b> is destructive and deliberately will not use the node's
+     default dataset id — it must be supplied in <code>msg.payload.dataset_repo_id</code>.</p>
+</script>

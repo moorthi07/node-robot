@@ -1,0 +1,18 @@
+{
+  "name": "@rrcf/node-robot-lerobot",
+  "version": "0.1.0",
+  "description": "LeRobot node collection for node-robot: control, record, browse, replay and run policies against a LeRobot backend (the leLab FastAPI service), plus a bridge that records this robot's live RRCF streams into a LeRobotDataset. Wraps HuggingFace's leLab rather than reimplementing it.",
+  "keywords": ["node-red", "lerobot", "lelab", "robotics", "imitation-learning", "node-robot"],
+  "license": "Apache-2.0",
+  "node-red": {
+    "version": ">=3.0.0",
+    "nodes": {
+      "lerobot-config": "lerobot-config.js",
+      "lerobot-record": "lerobot-record.js",
+      "lerobot-dataset": "lerobot-dataset.js",
+      "lerobot-policy": "lerobot-policy.js",
+      "lerobot-bridge": "lerobot-bridge.js"
+    }
+  },
+  "dependencies": {}
+}

@@ -1,0 +1,38 @@
+<script type="text/javascript">
+  RED.nodes.registerType('rrcf-cmd', {
+    category: 'RRCF',
+    color: '#4caf50',
+    defaults: { name: { value: '' } },
+    inputs: 1,
+    outputs: 2,
+    outputLabels: ['normalized command', 'validation warnings'],
+    icon: 'font-awesome/fa-check-circle',
+    label: function () { return this.name || 'rrcf validate'; },
+    paletteLabel: 'rrcf validate'
+  });
+</script>
+
+<script type="text/html" data-template-name="rrcf-cmd">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="rrcf validate">
+  </div>
+</script>
+
+<script type="text/html" data-help-name="rrcf-cmd">
+  <p>Validates and normalizes an inbound RRCF wire-format operator command against
+     the runtime's loaded <code>.rrcf</code> declaration.</p>
+  <h3>Input</h3>
+  <p><code>msg.payload</code> — a raw RRCF command object
+     (<code>lx, ly, rx, ry, speed, mode, skill, estop, ...</code>).</p>
+  <h3>Outputs</h3>
+  <ol class="node-ports">
+    <li>The normalized command (axes clamped to [-1,1], undeclared skills dropped,
+        a missing <code>estop</code> forced to <code>true</code>).</li>
+    <li>Validation warnings, when the command was not perfectly well-formed.
+        The main output still carries a fail-safe command.</li>
+  </ol>
+  <p>This node performs the CONTRACT check only. Safety enforcement (e-stop,
+     watchdog, speed clamp) is handled by the runtime's safety envelope, reached
+     through <code>rrcf-adapter</code>.</p>
+</script>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Sample .rrcf for node-robot — a wheeled differential-drive base.
+
+  This is what the RRCA loads at startup. It defines the robot's identity,
+  category, locomotion axes, declared skills, and — critically — the safety
+  envelope (estop / watchdog / speed_limit) that lib/safetyEnvelope.js enforces
+  on every command.
+
+  Replace this file (via RRCF_FILE) to run the RRCA for a different robot. Note
+  the runtime REJECTS a declaration with no telemetry endpoint at load time,
+  per RRCF v0.4 — a robot whose state cannot be seen is not safely commandable.
+-->
+<rrcf version="1.0" xmlns="https://rrcf.io/schema/1.0">
+
+  <meta>
+    <name>Sample Wheeled Robot</name>
+    <vendor>node-robot reference</vendor>
+    <model>sample-diff-drive</model>
+    <unit_id>sample-unit-001</unit_id>
+  </meta>
+
+  <primary category="wheeled">
+    <locomotion axes="vx wz" max_vx="1.2" max_vy="0.0" max_wz="1.8"/>
+    <modes>idle drive</modes>
+  </primary>
+
+  <skills>
+    <skill id="stop"  label="Stop"  standard="true"  cmd='{"mode":"idle"}'/>
+    <skill id="dock"  label="Dock"  standard="false" cmd='{"mode":"dock"}'/>
+  </skills>
+
+  <telemetry>
+    <field id="estop_state" type="boolean" widget="indicator" unit=""/>
+    <field id="health"      type="enum"    widget="indicator" unit=""
+           values="ready degraded rejected fault estop disconnected"/>
+    <field id="battery"     type="number"  widget="gauge" unit="%" min="0" max="100" warn_below="20"/>
+    <field id="speed"       type="number"  widget="gauge" unit="m/s" min="0" max="1.2"/>
+  </telemetry>
+
+  <safety>
+    <estop required="true" topic="/rrcf/sample/estop" qos="2"/>
+    <watchdog timeout_ms="500" action="halt"/>
+    <speed_limit max_vx="1.2" max_wz="1.8"/>
+  </safety>
+
+  <transport>
+    <endpoint role="operator_cmd" protocol="rrcf_mqtt" topic="/rrcf/sample/cmd"/>
+    <endpoint role="telemetry" protocol="mqtt" topic="/rrcf/sample/state" frequency_hz="10"/>
+  </transport>
+
+</rrcf>

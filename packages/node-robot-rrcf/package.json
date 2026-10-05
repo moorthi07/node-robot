@@ -1,0 +1,16 @@
+{
+  "name": "@rrcf/node-robot-rrcf",
+  "version": "0.1.0",
+  "description": "RRCF node collection for node-robot: command validation, endpoint adapter bridge, and safety/telemetry ops. The nodes that make a node-robot runtime an RRCA (RRCF Robot Control Agent).",
+  "keywords": ["node-red", "rrcf", "robotics", "teleoperation", "node-robot"],
+  "license": "Apache-2.0",
+  "node-red": {
+    "version": ">=3.0.0",
+    "nodes": {
+      "rrcf-cmd": "rrcf-cmd.js",
+      "rrcf-adapter": "rrcf-adapter.js",
+      "rrcf-ops": "rrcf-ops.js"
+    }
+  },
+  "dependencies": {}
+}

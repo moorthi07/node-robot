@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>node-robot — LeRobot</title>
+<style>
+  :root { --bg:#1e1e1e; --panel:#252526; --border:#333; --fg:#e0e0e0; --dim:#888; --accent:#e91e63; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
+    font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+  header { padding:10px 14px; border-bottom:1px solid var(--border);
+    display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  h1 { font-size:14px; font-weight:600; margin:0; }
+  .dim { color:var(--dim); }
+  input { background:#141414; color:var(--fg); border:1px solid var(--border);
+    border-radius:3px; padding:5px 8px; font-size:12px; }
+  button { background:var(--accent); color:#fff; border:0; border-radius:3px;
+    padding:6px 12px; font-size:12px; cursor:pointer; }
+  .pill { padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600; }
+  .pill.ok { background:#1b3a1e; color:#4caf50; }
+  .pill.bad { background:#4a1f1f; color:#f44336; }
+  #frame-wrap { height: calc(100vh - 54px); }
+  iframe { width:100%; height:100%; border:0; background:#fff; }
+  .msg { padding:20px; }
+  a { color:#2196f3; }
+</style>
+</head>
+<body>
+<header>
+  <h1>LeRobot</h1>
+  <span class="dim">backend</span>
+  <input id="url" style="width:260px" value="http://localhost:8000">
+  <button id="load">Load</button>
+  <span id="status" class="pill bad">unchecked</span>
+  <span class="dim" style="margin-left:auto">embedded leLab · <a href="/admin" target="_blank">Node-RED editor</a></span>
+</header>
+<div id="frame-wrap">
+  <div class="msg dim" id="placeholder">
+    Set the LeRobot backend URL above and press Load. This embeds the
+    <a href="https://github.com/huggingface/leLab" target="_blank">leLab</a> web UI —
+    calibrate, teleoperate, record, browse datasets, train, run inference, replay —
+    inside node-robot. The backend must be reachable from your browser and must
+    allow being framed (see the collection README on X-Frame-Options).
+  </div>
+</div>
+
+<script>
+// This page is served by node-robot itself, so it is "within" the app. It embeds
+// leLab's own full UI rather than reimplementing it — the compose-don't-rebuild
+// decision. The default URL comes from node-robot's status API so it matches the
+// lerobot-config the flow uses, but it stays editable here.
+const $ = (id) => document.getElementById(id);
+
+async function prefill() {
+  try {
+    const res = await fetch('/api/lerobot/config');
+    const cfg = await res.json();
+    if (cfg && cfg.baseUrl) $('url').value = cfg.baseUrl;
+  } catch { /* use the default */ }
+}
+
+async function check(url) {
+  try {
+    const res = await fetch(url.replace(/\/+$/, '') + '/health', { mode: 'cors' });
+    return res.ok;
+  } catch { return false; }
+}
+
+async function load() {
+  const url = $('url').value.replace(/\/+$/, '');
+  const healthy = await check(url);
+  $('status').textContent = healthy ? 'reachable' : 'unreachable';
+  $('status').className = 'pill ' + (healthy ? 'ok' : 'bad');
+
+  const wrap = $('frame-wrap');
+  wrap.innerHTML = '';
+  if (!healthy) {
+    wrap.innerHTML = '<div class="msg dim">Backend did not respond at ' + url +
+      '/health. Start leLab (<code>lelab</code>) or point at the host where it runs. ' +
+      'If health is reachable but the frame stays blank, leLab is likely sending ' +
+      'X-Frame-Options; see the collection README.</div>';
+    return;
+  }
+  const iframe = document.createElement('iframe');
+  iframe.src = url + '/';
+  wrap.appendChild(iframe);
+}
+
+$('load').onclick = load;
+prefill();
+</script>
+</body>
+</html>

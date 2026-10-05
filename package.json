@@ -1,0 +1,21 @@
+{
+  "name": "node-robot",
+  "version": "0.1.0",
+  "private": true,
+  "description": "RRCA runtime — a minimal Node-RED distribution with RRCF nodes that lets a robot speak the Robot Remote Control Format. Loads an .rrcf declaration, validates commands against the declared safety envelope, and bridges normalized controls/telemetry to a vendor endpoint via a pluggable adapter.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "check": "node --check index.js && node --check settings.js && node --check lib/rrcfCore.js && node --check lib/safetyEnvelope.js && node --check adapters/log.js && node -e \"JSON.parse(require('fs').readFileSync('flows/flows.json','utf8'));console.log('flows.json OK')\" && node test/load-nodes.js && node test/smoke.js && node test/bridge.js"
+  },
+  "dependencies": {
+    "@rrcf/node-robot-rrcf": "file:packages/node-robot-rrcf",
+    "dotenv": "16.4.5",
+    "express": "4.19.2",
+    "node-red": "4.0.9",
+    "xml2js": "0.6.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
